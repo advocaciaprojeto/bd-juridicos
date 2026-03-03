@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banco de Dados Jurídicos · Sistema Premium</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            min-height: 100vh;
+            transition: background 0.2s;
+        }
+
+        /* DARK MODE */
+        body.dark-mode {
+            background: #0b1120;
+        }
+        body.dark-mode .login-box,
+        body.dark-mode .sidebar,
+        body.dark-mode .stat-card,
+        body.dark-mode .content-card,
+        body.dark-mode .document-item,
+        body.dark-mode .calendar-event,
+        body.dark-mode .notifications-panel {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+        body.dark-mode .page-title h1,
+        body.dark-mode .stat-value,
+        body.dark-mode .card-header h3,
+        body.dark-mode .document-title,
+        body.dark-mode .event-info h4,
+        body.dark-mode .user-details h4 {
+            color: #f8fafc;
+        }
+        body.dark-mode .stat-label,
+        body.dark-mode .document-meta,
+        body.dark-mode .event-info p {
+            color: #cbd5e1;
+        }
+
+        /* LOGIN */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .login-box {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 50px -20px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 380px;
+            padding: 40px 32px;
+            animation: appear 0.4s ease;
+        }
+        @keyframes appear { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .login-header i {
+            font-size: 50px;
+            color: #3b82f6;
+            margin-bottom: 16px;
+        }
+        .login-header h1 {
+            color: #0f172a;
+            font-size: 26px;
+            font-weight: 700;
+        }
+        .login-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #334155;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            font-size: 14px;
+            background: white;
+            transition: 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59,130,246,0.15);
+        }
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-login:hover {
+            background: #2563eb;
+            transform: scale(1.02);
+        }
+        .demo-hint {
+            text-align: center;
+            margin-top: 20px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        /* DASHBOARD LAYOUT */
+        .dashboard {
+            display: none;
+            min-height: 100vh;
+        }
+        .dashboard.active {
+            display: block;
+        }
+        .dashboard-layout {
+            display: flex;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid #f1f5f9;
+            position: fixed;
+            height: 100vh;
+            padding: 24px 0;
+            transition: background 0.2s;
+            z-index: 10;
+        }
+        .sidebar-header {
+            padding: 0 20px 24px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar-header i {
+            font-size: 28px;
+            color: #3b82f6;
+        }
+        .sidebar-header h2 {
+            color: #0f172a;
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .sidebar-header span {
+            font-size: 11px;
+            color: #94a3b8;
+            display: block;
+        }
+        .sidebar-menu {
+            padding: 20px 12px;
+        }
+        .menu-category {
+            padding: 8px 12px;
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            color: #475569;
+            cursor: pointer;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.15s;
+            margin: 2px 0;
+        }
+        .menu-item:hover {
+            background: #f8fafc;
+            color: #3b82f6;
+        }
+        .menu-item.active {
+            background: #eef2ff;
+            color: #3b82f6;
+        }
+        .menu-item i {
+            width: 22px;
+            font-size: 16px;
+        }
+        .menu-item .badge {
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 2px 8px;
+            border-radius: 40px;
+            font-size: 10px;
+            margin-left: auto;
+        }
+        .menu-item.active .badge {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid #f1f5f9;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: #3b82f6;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        .user-details h4 {
+            color: #0f172a;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .user-details p {
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 28px 32px;
+        }
+        /* top bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .page-title i {
+            font-size: 22px;
+            color: #3b82f6;
+            background: #eef2ff;
+            padding: 8px;
+            border-radius: 16px;
+        }
+        .page-title h1 {
+            color: #0f172a;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+        }
+        .btn-icon:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 40px;
+            width: 20px;
+            height: 20px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px 4px 4px;
+            background: white;
+            border: 1px solid #f1f5f9;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .user-profile .avatar {
+            width: 36px;
+            height: 36px;
+            background: #3b82f6;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        .user-profile span {
+            color: #0f172a;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* NOTIFICATION PANEL */
+        .notifications-panel {
+            position: fixed;
+            top: 100px;
+            right: 30px;
+            width: 320px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 35px -8px rgba(0,0,0,0.15);
+            border: 1px solid #f1f5f9;
+            z-index: 1000;
+            display: none;
+        }
+        .notifications-panel.show { display: block; }
+        .notification-item {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            gap: 12px;
+        }
+        .notification-item i { color: #3b82f6; width: 24px; }
+        .notification-item p { color: #0f172a; font-size: 13px; }
+        .notification-item small { color: #94a3b8; font-size: 11px; }
+
+        /* CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 22px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 22px;
+            border: 1px solid #f1f5f9;
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: #eef2ff;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .stat-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .stat-label { color: #64748b; font-size: 13px; }
+
+        .content-card {
+            background: white;
+            border-radius: 26px;
+            padding: 24px;
+            border: 1px solid #f1f5f9;
+            margin-bottom: 28px;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .card-header h3 { font-size: 18px; font-weight: 700; color: #0f172a; }
+        .btn-outline {
+            padding: 6px 16px;
+            background: transparent;
+            border: 1px solid #e2e8f0;
+            border-radius: 40px;
+            color: #475569;
+            font-weight: 500;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .btn-outline:hover { border-color: #3b82f6; color: #3b82f6; }
+
+        /* DOCUMENTS GRID */
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+            gap: 16px;
+        }
+        .document-item {
+            background: #f8fafc;
+            border-radius: 22px;
+            padding: 20px;
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .document-item:hover { border-color: #3b82f6; background: white; }
+        .document-icon {
+            width: 42px;
+            height: 42px;
+            background: white;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            margin-bottom: 14px;
+        }
+        .document-title { font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+        .document-meta { color: #94a3b8; font-size: 12px; margin-bottom: 12px; }
+        .document-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .status-active { background: #eef2ff; color: #3b82f6; }
+        .status-pending { background: #fef3c7; color: #b45309; }
+
+        /* CALENDAR LIST */
+        .calendar-list { display: flex; flex-direction: column; gap: 12px; }
+        .calendar-event {
+            display: flex; align-items: center; gap: 16px; padding: 14px;
+            background: #f8fafc; border-radius: 20px; border: 1px solid #f1f5f9;
+        }
+        .event-date .day { font-size: 24px; font-weight: 700; color: #0f172a; line-height: 1; }
+        .event-date .month { font-size: 11px; color: #94a3b8; }
+        .event-info h4 { font-size: 14px; font-weight: 700; color: #0f172a; }
+        .event-info p { font-size: 12px; color: #64748b; }
+        .event-priority {
+            margin-left: auto; padding: 4px 12px; border-radius: 40px; font-size: 11px; font-weight: 600;
+        }
+        .priority-high { background: #fee2e2; color: #b91c1c; }
+
+        /* JURISPRUDÊNCIA (substitui assistente IA) */
+        .juris-search {
+            background: #f8fafc; border-radius: 26px; padding: 22px;
+        }
+        .search-box {
+            display: flex; gap: 12px; margin-bottom: 24px;
+        }
+        .search-box input {
+            flex: 1; padding: 14px 18px; border: 1px solid #e2e8f0;
+            border-radius: 40px; font-size: 14px; background: white;
+        }
+        .search-box input:focus { outline: none; border-color: #3b82f6; }
+        .search-box button {
+            width: 52px; height: 52px; background: #3b82f6;
+            border: none; border-radius: 40px; color: white; cursor: pointer;
+        }
+        .juris-filters {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;
+        }
+        .filter-chip {
+            padding: 8px 16px; background: white; border: 1px solid #e2e8f0;
+            border-radius: 40px; color: #334155; font-size: 12px; cursor: pointer;
+        }
+        .filter-chip:hover { border-color: #3b82f6; color: #3b82f6; }
+        .juris-result {
+            background: white; border-radius: 20px; padding: 20px;
+            border: 1px solid #f1f5f9; margin-bottom: 16px;
+        }
+        .juris-result h4 { color: #0f172a; font-size: 16px; margin-bottom: 4px; }
+        .juris-result p { color: #64748b; font-size: 13px; }
+
+        /* FLOATING BUTTON */
+        .btn-add {
+            position: fixed; bottom: 30px; right: 30px; width: 58px; height: 58px;
+            background: #3b82f6; border: none; border-radius: 30px; color: white;
+            font-size: 24px; cursor: pointer; box-shadow: 0 10px 20px -5px #3b82f6;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; z-index: 99;
+        }
+        .btn-add:hover { transform: scale(1.05); background: #2563eb; }
+
+        /* SECTIONS */
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .stats-grid { grid-template-columns: repeat(2,1fr); }
+        }
+        @media (max-width: 700px) {
+            .sidebar { width: 0; overflow: hidden; }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- TELA DE LOGIN -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <div class="login-header">
+                <i class="fas fa-scale-balanced"></i>
+                <h1>Banco de Dados Jurídicos</h1>
+                <p>Acesso ao sistema</p>
+            </div>
+            <div id="loginMessage" style="display:none; background:#fee2e2; color:#b91c1c; padding:12px; border-radius:20px; margin-bottom:16px; font-size:13px;"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" id="email" value="admin@juridico.com">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="password" value="123456">
+                </div>
+                <button type="submit" class="btn-login">Acessar sistema</button>
+            </form>
+            <div class="demo-hint">admin@juridico.com / 123456</div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PRINCIPAL -->
+    <div class="dashboard" id="dashboard">
+        <div class="dashboard-layout">
+            <!-- SIDEBAR (sem IA, financeiro, modelos) -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <i class="fas fa-scale-balanced"></i>
+                    <div>
+                        <h2>BD Jurídico</h2>
+                        <span>base de conhecimento</span>
+                    </div>
+                </div>
+                <div class="sidebar-menu">
+                    <div class="menu-category">principal</div>
+                    <div class="menu-item active" onclick="showSection('dashboard')">
+                        <i class="fas fa-chart-pie"></i><span>Dashboard</span>
+                    </div>
+                    <div class="menu-category">gestão</div>
+                    <div class="menu-item" onclick="showSection('processos')">
+                        <i class="fas fa-folder"></i><span>Processos</span><span class="badge">24</span>
+                    </div>
+                    <div class="menu-item" onclick="showSection('documentos')">
+                        <i class="fas fa-file-lines"></i><span>Documentos</span><span class="badge">156</span>
+                    </div>
+                    <div class="menu-item" onclick="showSection('clientes')">
+                        <i class="fas fa-users"></i><span>Clientes</span>
+                    </div>
+                    <div class="menu-item" onclick="showSection('calendario')">
+                        <i class="fas fa-calendar"></i><span>Calendário</span><span class="badge">8</span>
+                    </div>
+                    <div class="menu-category">jurídico</div>
+                    <div class="menu-item" onclick="showSection('jurisprudencia')">
+                        <i class="fas fa-gavel"></i><span>Jurisprudência</span><span class="badge">base</span>
+                    </div>
+                </div>
+                <div class="sidebar-footer">
+                    <div class="user-info">
+                        <div class="user-avatar" id="sidebarAvatar">DM</div>
+                        <div class="user-details">
+                            <h4 id="sidebarName">Dr. Marcelo</h4>
+                            <p>Administrador</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTEÚDO PRINCIPAL -->
+            <div class="main-content">
+                <!-- TOP BAR -->
+                <div class="top-bar">
+                    <div class="page-title">
+                        <i class="fas fa-chart-pie" id="pageIcon"></i>
+                        <h1 id="pageTitle">Dashboard</h1>
+                    </div>
+                    <div class="user-actions">
+                        <button class="btn-icon" onclick="toggleNotifications()">
+                            <i class="far fa-bell"></i>
+                            <span class="notification-badge">5</span>
+                        </button>
+                        <button class="btn-icon" onclick="toggleDarkMode()">
+                            <i class="far fa-moon"></i>
+                        </button>
+                        <div class="user-profile">
+                            <div class="avatar" id="userAvatar">DM</div>
+                            <span id="userName">Dr. Marcelo</span>
+                            <i class="fas fa-chevron-down" style="font-size: 10px;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NOTIFICAÇÕES PANEL -->
+                <div class="notifications-panel" id="notificationsPanel">
+                    <div class="notification-item"><i class="far fa-clock"></i><div><p>Prazo: contestação amanhã</p><small>há 2h</small></div></div>
+                    <div class="notification-item"><i class="fas fa-gavel"></i><div><p>Novo acórdão publicado</p><small>há 3h</small></div></div>
+                    <div class="notification-item"><i class="far fa-check-circle"></i><div><p>Documento assinado</p><small>há 1d</small></div></div>
+                </div>
+
+                <!-- SEÇÃO DASHBOARD -->
+                <div id="section-dashboard" class="content-section active">
+                    <div class="stats-grid">
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-folder"></i></div><div class="stat-value">24</div><div class="stat-label">Processos ativos</div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-file-lines"></i></div><div class="stat-value">156</div><div class="stat-label">Documentos</div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-clock"></i></div><div class="stat-value">8</div><div class="stat-label">Prazos</div></div>
+                        <div class="stat-card"><div class="stat-icon"><i class="fas fa-gavel"></i></div><div class="stat-value">243</div><div class="stat-label">Jurisprudências</div></div>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-header"><h3>📋 Resumo do banco</h3><button class="btn-outline">atualizar</button></div>
+                        <div style="display:flex; gap:32px; flex-wrap:wrap;">
+                            <div><span style="color:#64748b; font-size:13px;">Processos por área</span><div style="font-size:28px; font-weight:700; margin-top:8px;">Cível 45%</div><div style="width:100%; background:#e2e8f0; height:6px; border-radius:10px; margin:8px 0;"><div style="width:45%; height:6px; background:#3b82f6; border-radius:10px;"></div></div></div>
+                            <div><span style="color:#64748b; font-size:13px;">Documentos armazenados</span><div style="font-size:28px; font-weight:700;">1.2 GB</div><span style="color:#10b981;">↓ 20% este mês</span></div>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-header"><h3>📄 Documentos recentes</h3><button class="btn-outline">ver todos</button></div>
+                        <div class="documents-grid">
+                            <div class="document-item"><div class="document-icon"><i class="far fa-file-pdf"></i></div><div class="document-title">Petição Inicial</div><div class="document-meta">15/mar • 2.4MB</div><span class="document-status status-active">concluído</span></div>
+                            <div class="document-item"><div class="document-icon"><i class="far fa-file-word"></i></div><div class="document-title">Contrato Social</div><div class="document-meta">10/mar • 1.8MB</div><span class="document-status status-active">concluído</span></div>
+                            <div class="document-item"><div class="document-icon"><i class="far fa-file-pdf"></i></div><div class="document-title">Procuração</div><div class="document-meta">5/mar • 0.5MB</div><span class="document-status status-pending">pendente</span></div>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-header"><h3>⏳ Próximos prazos</h3><button class="btn-outline">calendário</button></div>
+                        <div class="calendar-list">
+                            <div class="calendar-event"><div class="event-date"><div class="day">15</div><div class="month">MAR</div></div><div class="event-info"><h4>Contestação</h4><p>Proc 123/2024</p></div><span class="event-priority priority-high">2 dias</span></div>
+                            <div class="calendar-event"><div class="event-date"><div class="day">20</div><div class="month">MAR</div></div><div class="event-info"><h4>Audiência</h4><p>Proc 456/2024</p></div><span class="event-priority">7 dias</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO PROCESSOS -->
+                <div id="section-processos" class="content-section">
+                    <div class="card-header"><h3>Processos ativos</h3><button class="btn-outline">+ novo</button></div>
+                    <div class="documents-grid">
+                        <div class="document-item"><div class="document-icon"><i class="fas fa-folder"></i></div><div class="document-title">123/2024</div><div class="document-meta">Trabalhista</div><span class="document-status status-active">ativo</span></div>
+                        <div class="document-item"><div class="document-icon"><i class="fas fa-folder"></i></div><div class="document-title">456/2024</div><div class="document-meta">Cível</div><span class="document-status status-pending">aguardando</span></div>
+                        <div class="document-item"><div class="document-icon"><i class="fas fa-folder"></i></div><div class="document-title">789/2024</div><div class="document-meta">Tributário</div><span class="document-status status-active">ativo</span></div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO DOCUMENTOS -->
+                <div id="section-documentos" class="content-section">
+                    <div class="card-header"><h3>Documentos</h3><button class="btn-outline">upload</button></div>
+                    <div class="documents-grid">
+                        <div class="document-item"><div class="document-icon"><i class="far fa-file-pdf"></i></div><div class="document-title">Petição Inicial</div><div class="document-meta">15/mar</div><span class="document-status status-active">PDF</span></div>
+                        <div class="document-item"><div class="document-icon"><i class="far fa-file-word"></i></div><div class="document-title">Contrato</div><div class="document-meta">10/mar</div><span class="document-status status-active">DOC</span></div>
+                        <div class="document-item"><div class="document-icon"><i class="far fa-file-pdf"></i></div><div class="document-title">Procuração</div><div class="document-meta">5/mar</div><span class="document-status status-pending">pendente</span></div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO CLIENTES -->
+                <div id="section-clientes" class="content-section">
+                    <div class="card-header"><h3>Clientes</h3><button class="btn-outline">+ cliente</button></div>
+                    <div style="display:flex; gap:16px; flex-wrap:wrap;">
+                        <div style="background:#f8fafc; border-radius:22px; padding:20px; width:200px;"><i class="fas fa-user-circle" style="font-size:40px; color:#3b82f6;"></i><h4 style="margin:8px 0;">Empresa ABC</h4><span>3 processos</span></div>
+                        <div style="background:#f8fafc; border-radius:22px; padding:20px; width:200px;"><i class="fas fa-user-circle" style="font-size:40px; color:#3b82f6;"></i><h4 style="margin:8px 0;">João Souza</h4><span>2 processos</span></div>
+                        <div style="background:#f8fafc; border-radius:22px; padding:20px; width:200px;"><i class="fas fa-user-circle" style="font-size:40px; color:#3b82f6;"></i><h4 style="margin:8px 0;">Maria Oliveira</h4><span>1 processo</span></div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO CALENDÁRIO -->
+                <div id="section-calendario" class="content-section">
+                    <div class="card-header"><h3>Calendário de prazos</h3><button class="btn-outline">+ evento</button></div>
+                    <div class="calendar-list">
+                        <div class="calendar-event"><div class="event-date"><div class="day">15</div><div class="month">MAR</div></div><div class="event-info"><h4>Contestação</h4><p>Proc 123/2024</p></div><span class="event-priority priority-high">urgente</span></div>
+                        <div class="calendar-event"><div class="event-date"><div class="day">20</div><div class="month">MAR</div></div><div class="event-info"><h4>Audiência</h4><p>Proc 456/2024</p></div><span class="event-priority">7d</span></div>
+                        <div class="calendar-event"><div class="event-date"><div class="day">25</div><div class="month">MAR</div></div><div class="event-info"><h4>Recurso</h4><p>Proc 789/2024</p></div><span class="event-priority">12d</span></div>
+                    </div>
+                </div>
+
+                <!-- SEÇÃO JURISPRUDÊNCIA (substitui IA e análise) -->
+                <div id="section-jurisprudencia" class="content-section">
+                    <div class="content-card">
+                        <div class="card-header"><h3>⚖️ Base de Jurisprudência</h3><span style="background:#eef2ff; color:#3b82f6; padding:4px 14px; border-radius:40px;">243 acórdãos</span></div>
+                        <div class="juris-search">
+                            <div class="search-box">
+                                <input type="text" placeholder="Pesquisar ementa, tribunal, relator...">
+                                <button><i class="fas fa-search"></i></button>
+                            </div>
+                            <div class="juris-filters">
+                                <span class="filter-chip">STF</span>
+                                <span class="filter-chip">STJ</span>
+                                <span class="filter-chip">Trabalhista</span>
+                                <span class="filter-chip">Previdenciário</span>
+                                <span class="filter-chip">2024</span>
+                            </div>
+                            <div class="juris-result">
+                                <h4>REsp 1.234.567/SP</h4>
+                                <p>Rel. Ministro João Silva · DJE 15/03/2024 · Dano moral · 85% similar</p>
+                            </div>
+                            <div class="juris-result">
+                                <h4>RE 987.654/DF</h4>
+                                <p>Rel. Ministra Ana Costa · DJE 10/03/2024 · Responsabilidade civil</p>
+                            </div>
+                            <div class="juris-result">
+                                <h4>AgRg no AREsp 456.789</h4>
+                                <p>Rel. Ministro Pedro Santos · DJE 05/03/2024 · Prescrição</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-add" onclick="openAddModal()"><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // LOGIN
+            const users = [{ email: 'admin@juridico.com', password: '123456', name: 'Dr. Marcelo' }];
+            if (localStorage.getItem('logged') === 'true') showDashboard();
+
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const pass = document.getElementById('password').value;
+                if (email === 'admin@juridico.com' && pass === '123456') {
+                    localStorage.setItem('logged', 'true');
+                    localStorage.setItem('userName', 'Dr. Marcelo');
+                    showDashboard();
+                } else {
+                    const msg = document.getElementById('loginMessage');
+                    msg.style.display = 'block';
+                    msg.textContent = 'E-mail ou senha inválidos';
+                }
+            });
+
+            function showDashboard() {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                const name = localStorage.getItem('userName') || 'Dr. Marcelo';
+                document.getElementById('userName').innerText = name;
+                document.getElementById('sidebarName').innerText = name;
+                const avatar = 'DM';
+                document.getElementById('userAvatar').innerText = avatar;
+                document.getElementById('sidebarAvatar').innerText = avatar;
+            }
+
+            window.logout = function() {
+                localStorage.removeItem('logged');
+                location.reload();
+            };
+
+            // Navegação
+            window.showSection = function(section) {
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                document.getElementById(`section-${section}`).classList.add('active');
+                document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+                if (event) event.currentTarget.classList.add('active');
+
+                const icons = { 
+                    'dashboard':'fa-chart-pie',
+                    'processos':'fa-folder',
+                    'documentos':'fa-file-lines',
+                    'clientes':'fa-users',
+                    'calendario':'fa-calendar',
+                    'jurisprudencia':'fa-gavel'
+                };
+                document.getElementById('pageIcon').className = `fas ${icons[section] || 'fa-chart-pie'}`;
+                document.getElementById('pageTitle').innerText = document.querySelector('.menu-item.active span')?.innerText || 'Dashboard';
+            };
+
+            // NOTIFICAÇÕES
+            window.toggleNotifications = function() {
+                document.getElementById('notificationsPanel').classList.toggle('show');
+            };
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.btn-icon') && !e.target.closest('.notifications-panel'))
+                    document.getElementById('notificationsPanel')?.classList.remove('show');
+            });
+
+            // DARK MODE
+            window.toggleDarkMode = function() {
+                document.body.classList.toggle('dark-mode');
+                const icon = document.querySelector('.btn-icon .far.fa-moon, .btn-icon .fas.fa-sun');
+                if (icon) icon.className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'far fa-moon';
+            };
+
+            window.openAddModal = function() { alert('➕ Adicionar novo registro (processo/documento/cliente)'); };
+        })();
+    </script>
+</body>
+</html>
